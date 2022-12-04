@@ -23,26 +23,35 @@ class SoccerGame:
         self.run()
 
     def run(self):
+        # self.screen.blit(self.background_penalty, (0,0))
         self.playing = True
         while self.playing:
             self.clock.tick(settings.FPS)
             self.events()
-            self.update_sprites()
-            self.draw_sprites()
+            # self.update_sprites('Goal')
+            # self.draw_sprites()
 
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.playing = False
                 self.running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == K_0:
+                    self.update_sprites('Goal')
+                if event.key == K_1:
+                    self.update_sprites('Defense')
+                if event.key == K_2:
+                    self.update_sprites('Out')
+            self.draw_sprites()
     
-    def update_sprites(self):
-        self.all_sprites.update()
+    def update_sprites(self, action):
+        self.all_sprites.update(action)
+        self.soccer_ball.update(action)
 
     def draw_sprites(self):
         self.screen.blit(self.background_penalty, (0,0))
         self.all_sprites.draw(self.screen)
-        self.soccer_ball.update()
         self.soccer_ball.draw()
         pygame.display.flip()
 
@@ -96,7 +105,7 @@ class SoccerGame:
                 if event.type == pygame.QUIT:
                     waiting = False
                     self.running = False
-                if event.type == pygame.KEYUP:
+                if event.type == pygame.KEYDOWN:
                     waiting = False
 
     def game_over_screen(self):
