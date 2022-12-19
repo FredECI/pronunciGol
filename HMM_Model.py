@@ -57,6 +57,6 @@ class HMMTrainer(object):
         return score
 
 
-hmm_class = HMMTrainer()
-score = hmm_class.get_score(r"audios\orange", r"audios\orange15.wav")
-print(score)
+# hmm_class = HMMTrainer()
+# score = hmm_class.get_score(r"audios\orange", r"audios\orange15.wav")
+# print(score)
