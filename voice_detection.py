@@ -68,4 +68,4 @@ class VoiceCapture:
 # print("playing back recorded sound")
 # sound.play()
 # time.sleep(5)
-# pg.quit()
+# pg.quit() 

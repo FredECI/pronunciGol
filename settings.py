@@ -1,3 +1,6 @@
+import os
+BASE_PATH = os.path.abspath(os.curdir)
+
 LENGTH = 900
 WIDTH = 600 
 GAME_TITLE = 'Soccer Game'

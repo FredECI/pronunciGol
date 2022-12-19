@@ -2,7 +2,13 @@ import pygame
 from pygame.locals import *
 import settings
 import sprites
-
+from time import sleep
+import os, random
+from voice_detection import VoiceCapture
+from voice_recorder import SoundRecord
+from HMM_Model import HMMTrainer
+import warnings
+warnings.filterwarnings("ignore")
 
 class SoccerGame:
     def __init__(self):
@@ -36,24 +42,88 @@ class SoccerGame:
             if event.type == pygame.QUIT:
                 self.playing = False
                 self.running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == K_0:
-                    self.update_sprites('Goal')
-                if event.key == K_1:
-                    self.update_sprites('Defense')
-                if event.key == K_2:
-                    self.update_sprites('Out')
-            self.draw_sprites()
+                self.draw_sprites()
+            # elif event.type == pygame.KEYDOWN and event.key in (K_0, K_1, K_2):
+            #     kick = pygame.mixer.Sound(os.path.join(settings.BASE_PATH, 'sound_effects', 'kick.wav'))
+            #     pygame.mixer.Sound.play(kick)
+            #     if event.key == K_0:
+            #         for i in range(11):
+            #             self.update_sprites('Goal')
+            #             sleep(0.1)
+            #             self.draw_sprites()
+            #         pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(settings.BASE_PATH, 'sound_effects', 'Goal.wav')), maxtime=2000)
+            #     if event.key == K_1:
+            #         for i in range(11):
+            #             sleep(0.1)
+            #             self.update_sprites('Defense')
+            #             self.draw_sprites()
+            #         pygame.mixer.Sound.play(kick)
+            #     if event.key == K_2:
+            #         for i in range(10):
+            #             sleep(0.1)
+            #             self.update_sprites('Out')
+            #             self.draw_sprites()
+            #     sleep(2)
+            #     self.update_sprites('Start')
+            #     self.draw_sprites()
+            else:
+                word = self.get_random_word()
+                if event.type == pygame.KEYDOWN and event.key == K_SPACE:                  
+                    
+                    sound_path = SoundRecord().record_sound()
+                    action = self.evaluate_sound(sound_path, word)
+                    
+                    kick = pygame.mixer.Sound(os.path.join(settings.BASE_PATH, 'sound_effects', 'kick.wav'))
+                    pygame.mixer.Sound.play(kick)
+
+                    size = 10
+                    if action == 'Defense':
+                        size = 11
+                    
+                    for i in range(size):
+                        self.update_sprites(action)
+                        sleep(0.1)
+                        self.draw_sprites()
+
+                    if action == 'Goal':
+                        pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(settings.BASE_PATH, 'sound_effects', 'Goal.wav')), maxtime=2000)
+                    elif action == 'Defense':
+                        pygame.mixer.Sound.play(kick)
+
+                    sleep(2)
+                    self.update_sprites('Start')
+                    self.draw_sprites()
+                else:
+                    self.draw_sprites(show_word=True, word=word)
     
     def update_sprites(self, action):
         self.all_sprites.update(action)
         self.soccer_ball.update(action)
 
-    def draw_sprites(self):
+    def draw_sprites(self, show_word=False, word=None):
         self.screen.blit(self.background_penalty, (0,0))
         self.all_sprites.draw(self.screen)
         self.soccer_ball.draw()
+        if show_word:
+            self.show_text('PRONUNCIE A PALAVRA ' + word , 40, settings.YELLOW, settings.LENGTH/2,70)
+            self.show_text('aperte barra de espaço para falar ' , 24, settings.YELLOW, settings.LENGTH/2,110)
         pygame.display.flip()
+
+    def get_random_word(self):
+        words_list = ['ENXERGAR', 'MORTADELA', 'RETRÓGRADO', 'BRINCADEIRAS', 'CÉREBRO']
+        return random.choice(words_list)
+    
+    def evaluate_sound(self, sound_path, word):
+        hmm_class = HMMTrainer()
+        score = hmm_class.get_score(r"audios\apple", sound_path)
+        print(score)
+        if str(score)[-1] in ('0', '1', '2', '3'):
+            return 'Goal'
+        elif str(score)[-1] in ('4', '5', '6'):
+            return 'Defense'
+        else:
+            return 'Out'
+
 
     def load_files(self):
         self.background_penalty = pygame.image.load('images\soccer_penalty_background.jpg').convert()

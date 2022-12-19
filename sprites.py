@@ -57,6 +57,14 @@ class Goalkeeper(pygame.sprite.Sprite):
             self.rect.center = (self.x_goalkeeper,self.y_goalkeeper)
             self.image = self.goalkeeper_images_out[int(self.list_index)]
 
+        if action == 'Start':
+            self.list_index = 0
+            self.image = self.goalkeeper_images_goal[self.list_index]
+            self.x_goalkeeper = 420
+            self.y_goalkeeper = 350
+            self.rect.center = (self.x_goalkeeper,self.y_goalkeeper)
+            
+
     def show_text(self, text: str, size: int, collor, x: int, y: int):
         font = pygame.font.Font(self.font, size)
         text = font.render(text, True, collor)
@@ -120,5 +128,13 @@ class Ball():
             self.division_factor += 0.7
             self.x_ball -= 55
             self.y_ball -= 45
+            self.image = pygame.transform.scale(self.soccer_ball_image, (600//self.division_factor, 600//self.division_factor))
+            self.rect.center = (self.x_ball, self.y_ball)
+
+        if action == 'Start':
+            self.list_index = 0
+            self.division_factor = 7
+            self.x_ball = 450
+            self.y_ball = 550
             self.image = pygame.transform.scale(self.soccer_ball_image, (600//self.division_factor, 600//self.division_factor))
             self.rect.center = (self.x_ball, self.y_ball)
