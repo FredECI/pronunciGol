@@ -20,6 +20,7 @@ class SoccerGame:
         self.font = pygame.font.match_font(settings.FONT)
         self.load_files()
         self.words_limits = json.load(open(r'words_limits/result.json'))
+        self.word = ''
 
     def new_game(self):
         self.all_sprites = pygame.sprite.Group()
@@ -44,11 +45,11 @@ class SoccerGame:
                 self.running = False
                 self.draw_sprites()
             else:
-                word = self.get_random_word()
                 if event.type == pygame.KEYDOWN and event.key == K_SPACE:                  
                     
                     sound_path = SoundRecord().record_sound()
-                    action = self.evaluate_sound(sound_path, word)
+                    print(f"No ponto 2 a palavra é {self.word}")
+                    action = self.evaluate_sound(sound_path, self.word)
                     
                     kick = pygame.mixer.Sound(os.path.join(settings.BASE_PATH, 'sound_effects', 'kick.wav'))
                     pygame.mixer.Sound.play(kick)
@@ -71,7 +72,8 @@ class SoccerGame:
                     self.update_sprites('Start')
                     self.draw_sprites()
                 else:
-                    self.draw_sprites(show_word=True, word=word)
+                    self.word = self.get_random_word()
+                    self.draw_sprites(show_word=True, word=self.word)
     
     def update_sprites(self, action):
         self.all_sprites.update(action)
@@ -92,8 +94,7 @@ class SoccerGame:
     def evaluate_sound(self, sound_path, word):
         hmm_class = HMMTrainer()
         score = hmm_class.get_score(r"palavras\{}".format(word.capitalize()), sound_path)
-        
-        q33, q66 = self.words_limits[word][0], self.words_limits[word][0]        
+        q33, q66 = self.words_limits[word][0], self.words_limits[word][1]
         if score <= q33:
             return 'Out'
         elif score > q33 and score <= q66:
