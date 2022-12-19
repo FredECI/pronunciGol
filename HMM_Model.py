@@ -4,9 +4,11 @@ import os
 import numpy as np
 # from scipy.io import wavfile 
 from hmmlearn import hmm
-import librosa
+import librosa, json
 from librosa.feature import mfcc
-
+import settings
+import warnings
+warnings.filterwarnings("ignore")
 
 class HMMTrainer(object):
     def __init__(self, model_name='GaussianHMM', n_components=4, cov_type='diag', n_iter=1000):
@@ -56,7 +58,21 @@ class HMMTrainer(object):
         score = self.model.score(mfcc_features)
         return score
 
+    def test(self):
+        final_dict = {}
+        for word in settings.words_list:
+            test_folder = r"palavras_teste\{}".format(word.capitalize())
+            reference_folder = r"palavras\{}".format(word.capitalize())
+            test_scores = []
+            for filename in os.listdir(test_folder):
+                f = os.path.join(test_folder, filename)
+                # checking if it is a file
+                test_scores.append(self.get_score(reference_folder, f))
+            test_scores = np.array(test_scores)
+            final_dict[word] = [np.quantile(test_scores, 0.33), np.quantile(test_scores, 0.66)]
+        with open(r'words_limits/result.json', 'w') as fp:
+            json.dump(final_dict, fp)
 
 # hmm_class = HMMTrainer()
-# score = hmm_class.get_score(r"audios\orange", r"audios\orange15.wav")
+# score = hmm_class.test(r"palavras\Brincadeiras", r"palavras_teste\Brincadeiras")
 # print(score)

@@ -1,10 +1,9 @@
 import pygame
 from pygame.locals import *
 import settings
-import sprites
+import sprites, json
 from time import sleep
-import os, random
-from voice_detection import VoiceCapture
+import os, random, numpy as np
 from voice_recorder import SoundRecord
 from HMM_Model import HMMTrainer
 import warnings
@@ -20,6 +19,7 @@ class SoccerGame:
         self.running = True
         self.font = pygame.font.match_font(settings.FONT)
         self.load_files()
+        self.words_limits = json.load(open(r'words_limits/result.json'))
 
     def new_game(self):
         self.all_sprites = pygame.sprite.Group()
@@ -87,20 +87,19 @@ class SoccerGame:
         pygame.display.flip()
 
     def get_random_word(self):
-        words_list = ['ENXERGAR', 'MORTADELA', 'RETRÓGRADO', 'BRINCADEIRAS', 'CÉREBRO']
-        return random.choice(words_list)
+        return random.choice(settings.words_list)
     
     def evaluate_sound(self, sound_path, word):
         hmm_class = HMMTrainer()
-        score = hmm_class.get_score(r"audios\apple", sound_path)
-        print(score)
-        if str(score)[-1] in ('0', '1', '2', '3'):
-            return 'Goal'
-        elif str(score)[-1] in ('4', '5', '6'):
+        score = hmm_class.get_score(r"palavras\{}".format(word.capitalize()), sound_path)
+        
+        q33, q66 = self.words_limits[word][0], self.words_limits[word][0]        
+        if score <= q33:
+            return 'Out'
+        elif score > q33 and score <= q66:
             return 'Defense'
         else:
-            return 'Out'
-
+            return 'Goal'
 
     def load_files(self):
         self.background_penalty = pygame.image.load('images\soccer_penalty_background.jpg').convert()
@@ -157,6 +156,8 @@ class SoccerGame:
 
     def game_over_screen(self):
         pass
+
+
 
 g = SoccerGame()
 g.start_screen()

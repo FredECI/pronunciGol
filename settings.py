@@ -8,3 +8,5 @@ FPS = 15
 FONT = 'arial'
 YELLOW = (244, 233, 51)
 WHITE = (255, 255, 255)
+
+words_list = ['ENXERGAR', 'MORTADELA', 'RETROGRADO', 'BRINCADEIRAS', 'CEREBRO']
