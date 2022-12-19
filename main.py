@@ -43,29 +43,6 @@ class SoccerGame:
                 self.playing = False
                 self.running = False
                 self.draw_sprites()
-            # elif event.type == pygame.KEYDOWN and event.key in (K_0, K_1, K_2):
-            #     kick = pygame.mixer.Sound(os.path.join(settings.BASE_PATH, 'sound_effects', 'kick.wav'))
-            #     pygame.mixer.Sound.play(kick)
-            #     if event.key == K_0:
-            #         for i in range(11):
-            #             self.update_sprites('Goal')
-            #             sleep(0.1)
-            #             self.draw_sprites()
-            #         pygame.mixer.Sound.play(pygame.mixer.Sound(os.path.join(settings.BASE_PATH, 'sound_effects', 'Goal.wav')), maxtime=2000)
-            #     if event.key == K_1:
-            #         for i in range(11):
-            #             sleep(0.1)
-            #             self.update_sprites('Defense')
-            #             self.draw_sprites()
-            #         pygame.mixer.Sound.play(kick)
-            #     if event.key == K_2:
-            #         for i in range(10):
-            #             sleep(0.1)
-            #             self.update_sprites('Out')
-            #             self.draw_sprites()
-            #     sleep(2)
-            #     self.update_sprites('Start')
-            #     self.draw_sprites()
             else:
                 word = self.get_random_word()
                 if event.type == pygame.KEYDOWN and event.key == K_SPACE:                  
